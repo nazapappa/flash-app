@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#0b1016"><title>FLASH NOIR — Preview</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+:root{--bg:#0b1016;--card:#161e28;--line:#2c3946;--lime:#c7fa64;--text:#f5f7f9;--muted:#96a5b3}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+button,input{font:inherit}button{cursor:pointer}.app{max-width:600px;min-height:100dvh;margin:auto;position:relative;background:var(--bg)}
+.top{padding:calc(env(safe-area-inset-top) + 20px) 22px 18px;display:flex;justify-content:space-between;align-items:center}.brand{font-size:31px;letter-spacing:-2px;font-weight:900}.brand span{color:var(--lime)}.tag{font-size:10px;color:var(--lime);letter-spacing:2px;border:1px solid #42533a;padding:9px 11px;border-radius:99px}
+.intro{padding:9px 22px 18px}.eyebrow{color:var(--lime);letter-spacing:2.5px;font-size:10px;font-weight:800}.intro h1{font-size:clamp(29px,8vw,42px);line-height:1.1;letter-spacing:-1.5px;margin:9px 0}.intro h1 em{color:var(--lime);font-style:normal}.intro p{color:var(--muted);font-size:13px;margin:0}
+.maparea{height:43dvh;min-height:285px;max-height:490px;position:relative;overflow:hidden;background:#101820}#map{width:100%;height:100%}.maparea:before{content:"";position:absolute;inset:0;z-index:400;pointer-events:none;box-shadow:inset 0 25px 24px #0b101644,inset 0 -35px 34px #0b1016bb}
+.mapchip{position:absolute;z-index:600;top:16px;left:18px;background:#111922ec;border:1px solid #354454;border-radius:99px;padding:9px 13px;font-size:10px;letter-spacing:1.1px}.mapchip i{display:inline-block;background:var(--lime);width:7px;height:7px;border-radius:50%;margin-right:7px}
+.leaflet-control-attribution{font-size:8px!important;background:#101820bb!important;color:#a9b2bd!important}.leaflet-control-attribution a{color:#c7fa64!important}
+.panel{margin:-22px 16px 0;position:relative;z-index:650;background:#19232e;border:1px solid #34424e;border-radius:23px;padding:19px;box-shadow:0 15px 42px #0008}
+.field{display:flex;align-items:center;gap:13px}.dot{width:11px;height:11px;border:3px solid var(--lime);border-radius:50%;flex:none}.dot.end{background:var(--lime)}.field label{display:block;color:var(--muted);font-size:10px;font-weight:800;letter-spacing:1.7px;margin-bottom:6px}.field div{flex:1;min-width:0}.field input{color:#fff;background:none;border:0;outline:0;width:100%;font-size:16px}.field input::placeholder{color:#8d9eac}.join{height:20px;border-left:1px dashed #788899;margin:6px 0 6px 5px}
+.go{margin-top:18px;width:100%;border:0;border-radius:14px;background:var(--lime);padding:17px;color:#101820;font-weight:900;letter-spacing:.2px}.go:disabled{opacity:.55}.status{font-size:12px;color:var(--muted);line-height:1.5;margin-top:11px}
+.result{padding:24px 22px 8px}.result h2{font-size:21px;margin:0 0 9px;letter-spacing:-.6px}.metrics{display:flex;gap:10px;margin-top:15px}.metric{background:var(--card);border:1px solid var(--line);border-radius:14px;flex:1;padding:14px}.metric b{display:block;color:var(--lime);font-size:23px}.metric small{font-size:11px;color:var(--muted)}.result p,footer{color:var(--muted);font-size:12px;line-height:1.6}footer{padding:8px 22px 35px;text-align:center}.hide{display:none}
+</style></head><body><main class="app">
+<header class="top"><div class="brand">FLASH<span>.</span></div><div class="tag">NOIR / PREVIEW</div></header>
+<div class="intro"><div class="eyebrow">MOVE DIFFERENT</div><h1>La città. <em>Ai tuoi tempi.</em></h1><p>Una nuova prospettiva sulla mobilità.</p></div>
+<div class="maparea"><div id="map"></div><div class="mapchip"><i></i> LIVE MAP · DARK EDITION</div></div>
+<section class="panel"><div class="field"><span class="dot"></span><div><label for="from">PARTENZA</label><input id="from" value="Roma Termini" placeholder="Indirizzo di partenza" autocomplete="street-address"></div></div>
+<div class="join"></div><div class="field"><span class="dot end"></span><div><label for="to">DESTINAZIONE</label><input id="to" placeholder="Dove vuoi andare?" autocomplete="off"></div></div>
+<button class="go" id="go">⚡ MOSTRA IL PERCORSO →</button><div class="status" id="status" role="status">Prova ad esempio “Colosseo”, “Milano Centrale” o un indirizzo italiano completo.</div></section>
+<section class="result hide" id="result"><h2>Il tuo percorso.</h2><div class="metrics"><div class="metric"><b id="km">—</b><small>Distanza stradale</small></div><div class="metric"><b id="minutes">—</b><small>Durata indicativa</small></div></div><p>Stime basate su un servizio pubblico dimostrativo. Non includono traffico in tempo reale, disponibilità di auto o prezzi.</p></section>
+<footer>FLASH NOIR · ANTEPRIMA VISIVA · Nessuna prenotazione reale</footer></main>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+const map=L.map('map',{zoomControl:false}).setView([41.9028,12.4964],12);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{subdomains:'abcd',maxZoom:19,attribution:'&copy; OpenStreetMap &copy; CARTO'}).addTo(map);
+L.control.zoom({position:'bottomright'}).addTo(map);
+let routeLayer=null,markers=[];
+function marker(latlon,fill){return L.circleMarker(latlon,{radius:9,color:'#0b1016',weight:4,fillColor:fill,fillOpacity:1}).addTo(map)}
+async function geocode(query){const url='https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=it&q='+encodeURIComponent(query);const response=await fetch(url,{headers:{'Accept':'application/json'}});if(!response.ok)throw Error('Servizio indirizzi momentaneamente non disponibile');const data=await response.json();if(!data.length)throw Error('Indirizzo non trovato: '+query);return [Number(data[0].lat),Number(data[0].lon)]}
+$('go').onclick=async()=>{const a=$('from').value.trim(),b=$('to').value.trim();if(!a||!b){$('status').textContent='Inserisci entrambi gli indirizzi.';return}
+$('go').disabled=true;$('status').textContent='Cerco gli indirizzi e calcolo il percorso…';
+try{const start=await geocode(a),end=await geocode(b);const url='https://router.project-osrm.org/route/v1/driving/'+start[1]+','+start[0]+';'+end[1]+','+end[0]+'?overview=full&geometries=geojson';const res=await fetch(url);if(!res.ok)throw Error('Servizio percorsi momentaneamente non disponibile');const data=await res.json();if(!data.routes?.length)throw Error('Nessun percorso stradale trovato');const r=data.routes[0];if(routeLayer)map.removeLayer(routeLayer);markers.forEach(m=>map.removeLayer(m));markers=[marker(start,'#c7fa64'),marker(end,'#ffffff')];routeLayer=L.geoJSON(r.geometry,{style:{color:'#c7fa64',weight:5,opacity:.95,lineCap:'round',lineJoin:'round'}}).addTo(map);map.fitBounds(routeLayer.getBounds(),{padding:[35,35]});$('km').textContent=(r.distance/1000).toLocaleString('it-IT',{maximumFractionDigits:1})+' km';$('minutes').textContent=Math.round(r.duration/60)+' min';$('result').classList.remove('hide');$('status').textContent='Percorso visualizzato sulla mappa.'}catch(e){$('status').textContent=e.message+'; riprova con un indirizzo più specifico.'}finally{$('go').disabled=false}};
+</script></body></html>
